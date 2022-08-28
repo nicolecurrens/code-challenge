@@ -20,18 +20,11 @@ class AddressParse(APIView):
 
         user_input = request.GET['address']
 
-        print("The address entered was: ")
-        print(user_input)
-
         # TODO implement error handling
+        # TODO if data is empty, display message?
         # Does it container characters and numbers?
-        # 
-        address_components, address_type = self.parse(user_input)
 
-        print("Here is the address type: ")
-        print(address_type)
-        print("and here is the address components: ")
-        print(address_components)
+        address_components, address_type = self.parse(user_input)
 
         return Response({'input_string': user_input,
                         'address_components': address_components,
@@ -40,8 +33,10 @@ class AddressParse(APIView):
     def parse(self, address):
         # usaddress documentation: https://github.com/datamade/usaddress
         # usaddress.tag returns the address components followed by the address type
-        tagged_address = usaddress.tag(address)
-        address_components = tagged_address[0]
-        address_type = tagged_address[1]
+        try:
+            address_components, address_type = usaddress.tag(address)
+            return address_components, address_type
+        except usaddress.RepeatedLabelError as e:
+            return -1, str(e)
 
-        return address_components, address_type
+

@@ -17,7 +17,6 @@
           <button id="submit" class="btn btn-success mt-3">Parse!</button>
         </form>
       </div>
-      <!-- TODO: Display parsed address components here. -->
       <div id="address-results" style="display:none">
         <h4>Parsing results</h4>
         <p>Address type: <strong><span id="parse-type"></span></strong></p>
@@ -38,45 +37,42 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script type="text/javascript">
+<script type="text/javascript">
+  // TODO Since I decided to use jquery, go back and update this
+  const form = document.forms[0];
+  form.addEventListener("submit", function(e) {
+    // Stop immediate form submission
+    e.preventDefault();
 
-      // TODO Since I decided to use jquery, go back and update this
-      const form = document.forms[0];
-      form.addEventListener("submit", function(e) {
-        // Stop immediate form submission
-        e.preventDefault();
-
-        // Reset div
+    // Reset div by removing existing table rows
+    var table = document.getElementsByClassName("table table-bordered")[0];
+    while(table.rows.length > 0) {
+      table.deleteRow(0);
+    }
+    
+    // Grab user input from form
+    var address = form.elements['address'].value;
+    // Use jquery to make GET request and handle returned data
+    $.getJSON('/api/parse', {address: address}, function(data) {
+      if(data["address_components"] == -1) {
+        console.log("There was an error");
+        $('#address-results').show();
+        $("#parse-type").text(data["address_type"]);
+      } else {
+        // Display results section
+        $('#address-results').show();
+        // Display address type
+        $("#parse-type").text(data["address_type"]);
         var table = document.getElementsByClassName("table table-bordered")[0];
-        while(table.rows.length > 0) {
-          table.deleteRow(0);
+        for(let key in data["address_components"]) {
+          var newRow = table.insertRow();
+          var addressPart = newRow.insertCell();
+          var tag = newRow.insertCell();
+          addressPart.innerHTML = key;
+          tag.innerHTML = data["address_components"][key];
         }
-        
-        // Grab user input from form
-        var address = form.elements['address'].value;
-        // Use jquery to make get request and handle returned data
-        $.getJSON('/api/parse', {address: address}, function(data) {
-          // Display results section
-          $('#address-results').show();
-          // Display address type
-          $("#parse-type").text(data["address_type"]);
-          var table = document.getElementsByClassName("table table-bordered")[0];
-          for(let key in data["address_components"]) {
-            var newRow = table.insertRow();
-            var addressPart = newRow.insertCell();
-            var tag = newRow.insertCell();
-            addressPart.innerHTML = key;
-            tag.innerHTML = data["address_components"][key];
-          }
-        });
-      });
-
-    function wait(ms){
-      var start = new Date().getTime();
-      var end = start;
-      while(end < start + ms) {
-      end = new Date().getTime();
-  }
-}
-  </script>
+      }
+    });
+  });
+</script>
 {% endblock %}
