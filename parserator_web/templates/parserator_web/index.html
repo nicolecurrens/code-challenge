@@ -38,8 +38,6 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-  // TODO Since I decided to use jquery, go back and update this
-  const form = document.forms[0];
   form.addEventListener("submit", function(e) {
     // Stop immediate form submission
     e.preventDefault();
@@ -54,16 +52,17 @@
     var address = form.elements['address'].value;
     // Use jquery to make GET request and handle returned data
     $.getJSON('/api/parse', {address: address}, function(data) {
+      // Make sure the results section is displayed
+      $('#address-results').show();
+      // If address components = -1, it means the view returned an error
       if(data["address_components"] == -1) {
-        console.log("There was an error");
-        $('#address-results').show();
+        // Address type will contain the error
         $("#parse-type").text(data["address_type"]);
       } else {
-        // Display results section
-        $('#address-results').show();
         // Display address type
         $("#parse-type").text(data["address_type"]);
         var table = document.getElementsByClassName("table table-bordered")[0];
+        // Create a new row for each address component
         for(let key in data["address_components"]) {
           var newRow = table.insertRow();
           var addressPart = newRow.insertCell();

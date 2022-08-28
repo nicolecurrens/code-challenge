@@ -15,17 +15,14 @@ class AddressParse(APIView):
     renderer_classes = [JSONRenderer]
 
     def get(self, request):
-        # TODO: Flesh out this method to parse an address string using the
-        # parse() method and return the parsed components to the frontend.
-
+        # Grab address from get request
         user_input = request.GET['address']
-
-        # TODO implement error handling
-        # TODO if data is empty, display message?
-        # Does it container characters and numbers?
 
         address_components, address_type = self.parse(user_input)
 
+        # If there was an error, address_components will be -1 and
+        # address_type will contain an error message that can be displayed
+        # to the user
         return Response({'input_string': user_input,
                         'address_components': address_components,
                         'address_type': address_type})
@@ -37,6 +34,7 @@ class AddressParse(APIView):
             address_components, address_type = usaddress.tag(address)
             return address_components, address_type
         except usaddress.RepeatedLabelError as e:
-            return -1, str(e)
+            error_string = "ERROR: Unable to tag this string because more than one area of the string has the same label"
+            return -1, error_string
 
 
