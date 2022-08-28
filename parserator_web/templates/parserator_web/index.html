@@ -40,13 +40,15 @@
 {% block extra_js %}
   <script type="text/javascript">
 
+      // TODO Since I decided to use jquery, go back and update this
       const form = document.forms[0];
-      form.addEventListener("submit", function (event) {
+      form.addEventListener("submit", function(e) {
         // stop form submission
-        event.preventDefault();
+        e.preventDefault();
         var address = form.elements['address'].value;
-        console.log(address);
-        wait(7000);
+        $.getJSON('/api/parse', {address: address}, function(data) {
+          console.log("doing stuff");
+        });
       });
 
     function wait(ms){
