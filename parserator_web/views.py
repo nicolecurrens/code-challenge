@@ -1,3 +1,4 @@
+from audioop import add
 import usaddress
 from django.views.generic import TemplateView
 from rest_framework.views import APIView
@@ -16,9 +17,14 @@ class AddressParse(APIView):
     def get(self, request):
         # TODO: Flesh out this method to parse an address string using the
         # parse() method and return the parsed components to the frontend.
+
         return Response({})
 
     def parse(self, address):
-        # TODO: Implement this method to return the parsed components of a
-        # given address using usaddress: https://github.com/datamade/usaddress
+        # usaddress documentation: https://github.com/datamade/usaddress
+        # usaddress.tag returns the address components followed by the address type
+        tagged_address = usaddress.tag(address)
+        address_components = tagged_address[0]
+        address_type = tagged_address[1]
+
         return address_components, address_type
