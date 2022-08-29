@@ -1,4 +1,5 @@
 from audioop import add
+from rest_framework import status
 import usaddress
 from django.views.generic import TemplateView
 from rest_framework.views import APIView
@@ -25,7 +26,8 @@ class AddressParse(APIView):
         # to the user
         return Response({'input_string': user_input,
                         'address_components': address_components,
-                        'address_type': address_type})
+                        'address_type': address_type},
+                        status=status.HTTP_200_OK)
 
     def parse(self, address):
         # usaddress documentation: https://github.com/datamade/usaddress

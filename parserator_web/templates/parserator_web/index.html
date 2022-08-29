@@ -38,6 +38,7 @@
 
 {% block extra_js %}
 <script type="text/javascript">
+  const form = document.forms[0];
   form.addEventListener("submit", function(e) {
     // Stop immediate form submission
     e.preventDefault();
@@ -52,10 +53,11 @@
     var address = form.elements['address'].value;
     // Use jquery to make GET request and handle returned data
     $.getJSON('/api/parse', {address: address}, function(data) {
-      // Make sure the results section is displayed
+      // Ensure results section is visible
       $('#address-results').show();
-      // If address components = -1, it means the view returned an error
+      // If address components are -1, there was an error parsing the address
       if(data["address_components"] == -1) {
+        console.log("Parsing error");
         // Address type will contain the error
         $("#parse-type").text(data["address_type"]);
       } else {
