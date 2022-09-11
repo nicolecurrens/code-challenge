@@ -21,7 +21,7 @@ def test_api_parse_succeds(client):
     })
 
     assert response.status_code == 200
-    assert json.loads(response.content) == correct_response_data
+    assert response.json() == correct_response_data
 
 
 def test_api_parse_raises_error(client):
