@@ -11,7 +11,7 @@
       <p>Dealing with some messy or unstructured addresses? We can parse them for you.</p>
       <div class="card card-body bg-light">
         <p><strong>Try it out!</strong> Parse an address in the United States into fields like <code>AddressNumber</code>, <code>StreetName</code> and <code>ZipCode</code>.</p>
-        <form class="form" role="form">
+        <form id="submission-form" class="form" role="form">
           {% csrf_token %}
           <input name="address" type="text" class="form-control" id="address" placeholder="123 Main St. Suite 100 Chicago, IL">
           <button id="submit" class="btn btn-success mt-3">Parse!</button>
@@ -20,7 +20,7 @@
       <div id="address-results" style="display:none">
         <h4>Parsing results</h4>
         <p>Address type: <strong><span id="parse-type"></span></strong></p>
-        <table class="table table-bordered">
+        <table id="address-table" class="table table-bordered">
           <thead>
             <tr>
               <th>Address part</th>
@@ -38,13 +38,13 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-  const form = document.forms[0];
+  const form = document.getElementById('submission-form');
   form.addEventListener("submit", function(e) {
     // Stop immediate form submission
     e.preventDefault();
 
     // Reset div by removing existing table rows
-    var table = document.getElementsByClassName("table table-bordered")[0];
+    var table = document.getElementById('address-table');
     while(table.rows.length > 0) {
       table.deleteRow(0);
     }
@@ -63,7 +63,6 @@
       } else {
         // Display address type
         $("#parse-type").text(data["address_type"]);
-        var table = document.getElementsByClassName("table table-bordered")[0];
         // Create a new row for each address component
         for(let key in data["address_components"]) {
           var newRow = table.insertRow();
