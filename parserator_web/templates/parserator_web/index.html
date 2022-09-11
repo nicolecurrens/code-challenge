@@ -51,26 +51,28 @@
     
     // Grab user input from form
     var address = form.elements['address'].value;
+    // Ensure results section is visible
+    $('#address-results').show();
+
     // Use jquery to make GET request and handle returned data
     $.getJSON('/api/parse', {address: address}, function(data) {
-      // Ensure results section is visible
-      $('#address-results').show();
-      // If address components are -1, there was an error parsing the address
-      if(data["address_components"] == -1) {
-        console.log("Parsing error");
-        // Address type will contain the error
-        $("#parse-type").text(data["address_type"]);
-      } else {
-        // Display address type
-        $("#parse-type").text(data["address_type"]);
-        // Create a new row for each address component
-        for(let key in data["address_components"]) {
-          var newRow = table.insertRow();
-          var addressPart = newRow.insertCell();
-          var tag = newRow.insertCell();
-          addressPart.innerHTML = key;
-          tag.innerHTML = data["address_components"][key];
-        }
+      // Display address type
+      $("#parse-type").text(data["address_type"]);
+      // Create a new row for each address component
+      for(let key in data["address_components"]) {
+        var newRow = table.insertRow();
+        var addressPart = newRow.insertCell();
+        var tag = newRow.insertCell();
+        addressPart.innerHTML = key;
+        tag.innerHTML = data["address_components"][key];
+      }
+      // If the response code is an error
+    }).fail(function(response) {
+        if(response.status == 400 ) {
+          var error_string = "ERROR: Unable to tag this string because more than one area of the string has the same label"
+          console.log("Parsing error");
+          // Address type will contain the error
+          $("#parse-type").text(error_string);
       }
     });
   });
